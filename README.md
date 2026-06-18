@@ -203,12 +203,12 @@ Aceite todos os acessos solicitados na primeira execução.
 
 ## 🤝 Contribuição
 
-Para melhorias ou reportar bugs, entre em contato com o desenvolvedor.
+1. Giovanni B. Giovanelli
+2. Lucas Gabriel Genovezi
+3. Mateus Henrique Oliveira
+4. Thiago Henrique Bonierski
 
 ## 📄 Licença
 
 Desenvolvido para Vieira Móveis Sob Medida.
 
----
-
-**Desenvolvido com ❤️ usando Google Apps Script**
