@@ -1,27 +1,27 @@
-# 🪵 Vieira Móveis Sob Medida — Sistema de Gestão
+# Vieira Móveis Sob Medida — Sistema de Gestão
 
 Sistema completo de gestão para marcenaria especializada em móveis sob medida, desenvolvido com **Google Apps Script** e **Google Sheets**.
 
-## 📋 Sobre o Projeto
+## Sobre o Projeto
 
 Sistema integrado para gerenciar todas as operações de uma marcenaria:
 
-- ✅ **Gestão de Clientes** — Cadastro e histórico de clientes
-- ✅ **Gestão de Pedidos** — Controle completo do ciclo de vida dos pedidos
-- ✅ **Controle de Estoque** — Monitoramento de materiais e quantidades
-- ✅ **Movimentações** — Rastreamento de entradas e saídas
-- ✅ **Dashboard** — Visualização em tempo real de métricas
-- ✅ **Alertas Automáticos** — Notificações de prazos e estoque mínimo
+- **Gestão de Clientes** — Cadastro e histórico de clientes
+- **Gestão de Pedidos** — Controle completo do ciclo de vida dos pedidos
+- **Controle de Estoque** — Monitoramento de materiais e quantidades
+- **Movimentações** — Rastreamento de entradas e saídas
+- **Dashboard** — Visualização em tempo real de métricas
+- **Alertas Automáticos** — Notificações de prazos e estoque mínimo
 
-## 🚀 Funcionalidades Principais
+## Funcionalidades Principais
 
-### 📞 Gestão de Clientes
+### Gestão de Clientes
 
 - Cadastro com informações de contato (telefone, e-mail, endereço)
 - Histórico de pedidos vinculado
 - Data de cadastro e observações
 
-### 🛒 Gestão de Pedidos
+### Gestão de Pedidos
 
 - Criação de novos pedidos vinculados a clientes
 - Rastreamento de: descrição, prazos, montagem e instalação
@@ -29,25 +29,25 @@ Sistema integrado para gerenciar todas as operações de uma marcenaria:
 - Status do pedido e responsável
 - Integração com Google Calendar para eventos automáticos
 
-### 📦 Controle de Estoque
+### Controle de Estoque
 
 - Cadastro de materiais com código e descrição
 - Rastreamento de quantidade (atual e mínima)
 - Histórico de fornecedores e preços
 - Alertas quando atingir quantidade mínima
 
-### 📊 Dashboard
+### Dashboard
 
 - Atualização automática ao editar pedidos ou estoque
 - Visualização rápida de informações críticas
 
-### ⚠️ Sistema de Alertas
+### Sistema de Alertas
 
 - Alerta de prazos de entrega (configurável em dias)
 - Verificação automática ao editar planilha
 - Notificações via e-mail ao proprietário
 
-## 📂 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 Projeto Integrador Extensor/
@@ -61,21 +61,21 @@ Projeto Integrador Extensor/
 └── images/                            # Imagens do projeto
 ```
 
-## 🔧 Instalação e Configuração
+## Instalação e Configuração
 
-### 1️⃣ Pré-requisitos
+### 1 Pré-requisitos
 
 - Conta Google (Gmail)
 - Acesso ao Google Sheets e Google Apps Script
 - Navegador atualizado
 
-### 2️⃣ Criação da Planilha
+### 2 Criação da Planilha
 
 1. Acesse [Google Sheets](https://sheets.google.com)
 2. Crie uma nova planilha
 3. Nomeie como "Vieira Móveis Sob Medida"
 
-### 3️⃣ Instalação do Script
+### 3 Instalação do Script
 
 1. Na planilha, clique em **Extensões → Apps Script**
 2. Delete o código padrão em `Code.gs`
@@ -86,7 +86,7 @@ Projeto Integrador Extensor/
    - **FormEstoque.html**
    - **BuscaCliente.html**
 
-### 4️⃣ Configuração Inicial
+### 4 Configuração Inicial
 
 1. **IMPORTANTE:** Abra o arquivo `Código.gs` e procure pela variável `CONFIG`:
 
@@ -105,44 +105,44 @@ Projeto Integrador Extensor/
 4. No menu **Vieira Móveis** → **Configuração Inicial**
 5. Clique em **Sim** para criar todas as abas automaticamente
 
-## 📖 Como Usar
+## Como Usar
 
-### 🆕 Novo Pedido
+### Novo Pedido
 
 1. Menu **Vieira Móveis** → **Novo Pedido**
 2. Selecione ou crie um cliente
 3. Preencha descrição, prazos e valores
 4. Clique em **Salvar**
 
-### 👤 Novo Cliente
+### Novo Cliente
 
 1. Menu **Vieira Móveis** → **Novo Cliente**
 2. Preencha nome, telefone, e-mail e endereço
 3. Clique em **Salvar**
 
-### 📦 Movimentação de Estoque
+### Movimentação de Estoque
 
 1. Menu **Vieira Móveis** → **Entrada de Material** ou **Saída de Material**
 2. Selecione o material e quantidade
 3. Clique em **Salvar**
 
-### 🔍 Buscar Cliente
+### Buscar Cliente
 
 1. Menu **Vieira Móveis** → **Buscar Cliente**
 2. Digite nome ou código
 3. Visualize informações e histórico
 
-### 📊 Atualizar Dashboard
+### Atualizar Dashboard
 
 - Clique em **Vieira Móveis** → **Atualizar Dashboard**
 - Atualiza automaticamente ao editar pedidos ou estoque
 
-### ⚠️ Verificar Alertas
+### Verificar Alertas
 
 - Clique em **Vieira Móveis** → **Verificar Alertas Agora**
 - Envia notificações para prazos próximos
 
-## 🗂️ Estrutura das Abas do Google Sheets
+## Estrutura das Abas do Google Sheets
 
 | Aba             | Descrição                                           |
 | --------------- | --------------------------------------------------- |
@@ -152,7 +152,7 @@ Projeto Integrador Extensor/
 | **Mov_Estoque** | Movimentações (entradas/saídas com rastreabilidade) |
 | **Dashboard**   | KPIs e visualizações em tempo real                  |
 
-## ⚙️ Variáveis de Configuração
+## Variáveis de Configuração
 
 Edite o objeto `CONFIG` em `Código.gs` para customizar:
 
@@ -164,17 +164,17 @@ var CONFIG = {
 };
 ```
 
-## 🔐 Permissões Necessárias
+## Permissões Necessárias
 
 O script solicita acesso a:
 
-- 📊 Google Sheets (ler/escrever dados)
-- 📧 Gmail (envio de alertas)
-- 📅 Google Calendar (criar eventos de entrega)
+- Google Sheets (ler/escrever dados)
+- Gmail (envio de alertas)
+- Google Calendar (criar eventos de entrega)
 
 Aceite todos os acessos solicitados na primeira execução.
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Menu não aparece
 
@@ -193,22 +193,22 @@ Aceite todos os acessos solicitados na primeira execução.
 - Verifique se a planilha já não possui as abas necessárias
 - Tente criar manualmente as abas com os nomes exatos
 
-## 📝 Notas Importantes
+## Notas Importantes
 
-- ✅ Todos os dados são salvos no Google Sheets
-- ✅ Backups automáticos (verificar versões do Sheets)
-- ✅ Sincronização em tempo real
-- ⚠️ Certifique-se de usar em ambiente de produção com cautela
-- ⚠️ Faça testes antes de usar com dados reais
+- Todos os dados são salvos no Google Sheets
+- Backups automáticos (verificar versões do Sheets)
+- Sincronização em tempo real
+- Certifique-se de usar em ambiente de produção com cautela
+- Faça testes antes de usar com dados reais
 
-## 🤝 Contribuição
+## Contribuição
 
 1. Giovanni B. Giovanelli
 2. Lucas Gabriel Genovezi
 3. Mateus Henrique Oliveira
 4. Thiago Henrique Bonierski
 
-## 📄 Licença
+## Licença
 
 Desenvolvido para Vieira Móveis Sob Medida.
 
