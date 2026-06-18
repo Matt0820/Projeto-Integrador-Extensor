@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px;
+           background: #f5f5f5; color: #333; }
+    .header { background: #2d5016; color: #fff; padding: 14px 16px; }
+    .header h2 { font-size: 15px; font-weight: 600; }
+    .header p  { font-size: 11px; opacity: .8; margin-top: 2px; }
+    .form-body { padding: 14px 16px; }
+    .group { margin-bottom: 12px; }
+    label { display: block; font-weight: 600; margin-bottom: 4px;
+            font-size: 12px; color: #555; }
+    input, select, textarea {
+      width: 100%; padding: 7px 9px; border: 1px solid #ccc;
+      border-radius: 5px; font-size: 13px; background: #fff;
+      transition: border .2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #2d5016; outline: none;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-salvar {
+      width: 100%; padding: 10px; background: #2d5016; color: #fff;
+      border: none; border-radius: 5px; font-size: 14px;
+      font-weight: 600; cursor: pointer; margin-top: 6px;
+    }
+    .btn-salvar:hover { background: #3d6b1e; }
+    .btn-salvar:disabled { background: #999; cursor: default; }
+    .msg { margin-top: 10px; padding: 9px 12px; border-radius: 5px;
+           font-size: 12px; display: none; }
+    .msg.ok  { background: #e8f5e9; border: 1px solid #4caf50; color: #1b5e20; }
+    .msg.err { background: #ffebee; border: 1px solid #ef9a9a; color: #b71c1c; }
+    .section-title { font-weight: 700; color: #2d5016; margin: 14px 0 8px;
+                     font-size: 12px; text-transform: uppercase;
+                     border-bottom: 1px solid #c8e6c9; padding-bottom: 4px; }
+    .novo-cliente-link { font-size: 11px; color: #2d5016; cursor: pointer;
+                         text-decoration: underline; margin-top: 3px;
+                         display: inline-block; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h2>➕ Novo Pedido</h2>
+  <p>Preencha os dados do pedido e clique em Salvar</p>
+</div>
+<div class="form-body">
+
+  <div class="section-title">Cliente</div>
+  <div class="group">
+    <label>Cliente *</label>
+    <select id="codigoCliente" required>
+      <option value="">Carregando clientes...</option>
+    </select>
+    <span class="novo-cliente-link" onclick="google.script.run.abrirFormCliente()">
+      + Cadastrar novo cliente
+    </span>
+  </div>
+
+  <div class="section-title">Projeto</div>
+  <div class="group">
+    <label>Descrição do Projeto *</label>
+    <textarea id="descricao" placeholder="Ex: Cozinha planejada com armários superiores e inferiores em MDF branco..." required></textarea>
+  </div>
+  <div class="group">
+    <label>Local de Instalação</label>
+    <input type="text" id="localInstalacao" placeholder="Ex: Rua das Flores, 120 – Campo Largo">
+  </div>
+
+  <div class="section-title">Datas</div>
+  <div class="row2">
+    <div class="group">
+      <label>Prazo de Entrega</label>
+      <input type="date" id="prazoEntrega">
+    </div>
+    <div class="group">
+      <label>Data de Montagem</label>
+      <input type="date" id="dataMontagem">
+    </div>
+  </div>
+
+  <div class="section-title">Financeiro</div>
+  <div class="row2">
+    <div class="group">
+      <label>Valor Total (R$) *</label>
+      <input type="number" id="valorTotal" placeholder="0.00" min="0" step="0.01" required>
+    </div>
+    <div class="group">
+      <label>Valor Recebido (R$)</label>
+      <input type="number" id="valorRecebido" placeholder="0.00" min="0" step="0.01" value="0">
+    </div>
+  </div>
+
+  <div class="section-title">Execução</div>
+  <div class="group">
+    <label>Responsável pela Execução</label>
+    <input type="text" id="responsavel" placeholder="Ex: João, Equipe, Proprietário">
+  </div>
+  <div class="group">
+    <label>Observações</label>
+    <textarea id="observacoes" placeholder="Detalhes adicionais, materiais específicos, etc."></textarea>
+  </div>
+
+  <button class="btn-salvar" id="btnSalvar" onclick="salvar()">💾 Salvar Pedido</button>
+  <div class="msg" id="msg"></div>
+</div>
+
+<script>
+  // Carrega lista de clientes ao abrir
+  google.script.run
+    .withSuccessHandler(function(clientes) {
+      var sel = document.getElementById('codigoCliente');
+      sel.innerHTML = '<option value="">-- Selecione o cliente --</option>';
+      clientes.forEach(function(c) {
+        sel.innerHTML += '<option value="' + c.codigo + '">' +
+                         c.codigo + ' – ' + c.nome + '</option>';
+      });
+    })
+    .listarClientes();
+
+  function salvar() {
+    var btn = document.getElementById('btnSalvar');
+    var msg = document.getElementById('msg');
+
+    var codigoCliente = document.getElementById('codigoCliente').value;
+    var descricao     = document.getElementById('descricao').value.trim();
+    var valorTotal    = document.getElementById('valorTotal').value;
+
+    if (!codigoCliente || !descricao || !valorTotal) {
+      mostrarMsg('⚠️ Preencha os campos obrigatórios: Cliente, Descrição e Valor Total.', 'err');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Salvando...';
+
+    var dados = {
+      codigoCliente:  codigoCliente,
+      descricao:      descricao,
+      prazoEntrega:   document.getElementById('prazoEntrega').value   || null,
+      dataMontagem:   document.getElementById('dataMontagem').value   || null,
+      localInstalacao:document.getElementById('localInstalacao').value,
+      valorTotal:     valorTotal,
+      valorRecebido:  document.getElementById('valorRecebido').value  || 0,
+      responsavel:    document.getElementById('responsavel').value,
+      observacoes:    document.getElementById('observacoes').value
+    };
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        mostrarMsg(res, 'ok');
+        btn.disabled = false;
+        btn.textContent = '💾 Salvar Pedido';
+        limparForm();
+      })
+      .withFailureHandler(function(err) {
+        mostrarMsg('❌ Erro: ' + err.message, 'err');
+        btn.disabled = false;
+        btn.textContent = '💾 Salvar Pedido';
+      })
+      .salvarPedido(dados);
+  }
+
+  function mostrarMsg(texto, tipo) {
+    var el = document.getElementById('msg');
+    el.textContent = texto;
+    el.className = 'msg ' + tipo;
+    el.style.display = 'block';
+    if (tipo === 'ok') setTimeout(function(){ el.style.display='none'; }, 5000);
+  }
+
+  function limparForm() {
+    document.getElementById('codigoCliente').selectedIndex = 0;
+    document.getElementById('descricao').value      = '';
+    document.getElementById('prazoEntrega').value   = '';
+    document.getElementById('dataMontagem').value   = '';
+    document.getElementById('localInstalacao').value= '';
+    document.getElementById('valorTotal').value     = '';
+    document.getElementById('valorRecebido').value  = '0';
+    document.getElementById('responsavel').value    = '';
+    document.getElementById('observacoes').value    = '';
+  }
+</script>
+</body>
+</html>

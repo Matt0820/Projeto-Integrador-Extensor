@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px;
+           background: #f5f5f5; color: #333; }
+    .header { background: #2d5016; color: #fff; padding: 14px 16px; }
+    .header h2 { font-size: 15px; font-weight: 600; }
+    .header p  { font-size: 11px; opacity: .8; margin-top: 2px; }
+    .search-bar { padding: 12px 16px; background: #fff;
+                  border-bottom: 1px solid #e0e0e0; display: flex; gap: 8px; }
+    .search-bar input {
+      flex: 1; padding: 8px 10px; border: 1px solid #ccc;
+      border-radius: 5px; font-size: 13px;
+    }
+    .search-bar input:focus { border-color: #2d5016; outline: none; }
+    .search-bar button {
+      padding: 8px 14px; background: #2d5016; color: #fff;
+      border: none; border-radius: 5px; cursor: pointer; font-size: 13px;
+    }
+    .search-bar button:hover { background: #3d6b1e; }
+    .content { padding: 12px 16px; }
+    .placeholder { text-align: center; color: #999; padding: 30px 0; font-size: 12px; }
+    .cliente-card {
+      background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;
+      margin-bottom: 12px; overflow: hidden;
+    }
+    .cliente-header {
+      background: #f1f8e9; padding: 10px 14px;
+      border-bottom: 1px solid #c8e6c9;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .cliente-nome { font-weight: 700; font-size: 14px; color: #2d5016; }
+    .cliente-cod  { font-size: 11px; color: #558b2f; font-weight: 600; }
+    .cliente-info { padding: 10px 14px; }
+    .info-row { display: flex; gap: 6px; margin-bottom: 5px;
+                font-size: 12px; align-items: flex-start; }
+    .info-label { font-weight: 600; color: #777; min-width: 60px; }
+    .info-val   { color: #333; }
+    .pedidos-section { padding: 8px 14px; background: #fafafa;
+                       border-top: 1px solid #eee; }
+    .pedidos-title { font-weight: 700; font-size: 11px; color: #555;
+                     text-transform: uppercase; margin-bottom: 8px; }
+    .pedido-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 80px 90px;
+      gap: 4px; font-size: 11px; padding: 5px 0;
+      border-bottom: 1px dashed #e0e0e0;
+    }
+    .pedido-row:last-child { border-bottom: none; }
+    .pedido-num { font-weight: 700; color: #2d5016; }
+    .badge-status {
+      display: inline-block; padding: 2px 7px; border-radius: 10px;
+      font-size: 10px; font-weight: 600;
+    }
+    .status-Aprovado          { background:#e3f2fd; color:#1565c0; }
+    .status-Em-Produção       { background:#fff3e0; color:#e65100; }
+    .status-Concluído         { background:#e8f5e9; color:#1b5e20; }
+    .status-Orçamento         { background:#fff9c4; color:#f57f17; }
+    .status-Aguardando-Entrega{ background:#f3e5f5; color:#6a1b9a; }
+    .nenhum { font-size: 11px; color: #aaa; font-style: italic; }
+    .loader { text-align: center; padding: 20px; color: #888; font-size: 12px; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h2>🔍 Buscar Cliente</h2>
+  <p>Pesquise por nome, código ou telefone</p>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="termoBusca" placeholder="Digite nome, código (CLI-001) ou telefone..."
+         onkeydown="if(event.key==='Enter') buscar()">
+  <button onclick="buscar()">Buscar</button>
+</div>
+
+<div class="content" id="content">
+  <div class="placeholder">
+    Digite um nome, código ou telefone e pressione Buscar.
+  </div>
+</div>
+
+<script>
+  function buscar() {
+    var termo = document.getElementById('termoBusca').value.trim();
+    if (!termo) return;
+
+    var content = document.getElementById('content');
+    content.innerHTML = '<div class="loader">⏳ Buscando...</div>';
+
+    google.script.run
+      .withSuccessHandler(function(resultados) {
+        content.innerHTML = '';
+        if (resultados.length === 0) {
+          content.innerHTML = '<div class="placeholder">Nenhum cliente encontrado para "<b>' + termo + '</b>".</div>';
+          return;
+        }
+        resultados.forEach(function(c) {
+          var pedidosHtml = '';
+          if (c.pedidos && c.pedidos.length > 0) {
+            c.pedidos.forEach(function(p) {
+              var statusClass = 'status-' + (p.status || '').replace(/\s+/g, '-');
+              pedidosHtml += '<div class="pedido-row">'
+                + '<span class="pedido-num">' + p.num + '</span>'
+                + '<span>' + (p.descricao || '—').substring(0, 35) + '</span>'
+                + '<span>R$ ' + Number(p.valor || 0).toFixed(2) + '</span>'
+                + '<span><span class="badge-status ' + statusClass + '">' + (p.status || '—') + '</span></span>'
+                + '</div>';
+            });
+          } else {
+            pedidosHtml = '<span class="nenhum">Nenhum pedido registrado.</span>';
+          }
+
+          content.innerHTML +=
+            '<div class="cliente-card">' +
+            '  <div class="cliente-header">' +
+            '    <span class="cliente-nome">' + c.nome + '</span>' +
+            '    <span class="cliente-cod">' + c.codigo + '</span>' +
+            '  </div>' +
+            '  <div class="cliente-info">' +
+            '    <div class="info-row"><span class="info-label">📱 Tel.</span><span class="info-val">' + (c.telefone || '—') + '</span></div>' +
+            '    <div class="info-row"><span class="info-label">📧 Email</span><span class="info-val">' + (c.email || '—') + '</span></div>' +
+            '    <div class="info-row"><span class="info-label">📍 End.</span><span class="info-val">' + (c.endereco ? c.endereco + ' – ' + c.cidade : c.cidade || '—') + '</span></div>' +
+            '    <div class="info-row"><span class="info-label">📅 Cad.</span><span class="info-val">' + c.cadastro + '</span></div>' +
+            (c.observacoes ? '    <div class="info-row"><span class="info-label">📝 Obs.</span><span class="info-val">' + c.observacoes + '</span></div>' : '') +
+            '  </div>' +
+            '  <div class="pedidos-section">' +
+            '    <div class="pedidos-title">📋 Pedidos (' + c.totalPedidos + ')</div>' +
+            pedidosHtml +
+            '  </div>' +
+            '</div>';
+        });
+      })
+      .withFailureHandler(function(err) {
+        content.innerHTML = '<div class="placeholder">❌ Erro: ' + err.message + '</div>';
+      })
+      .buscarCliente(termo);
+  }
+</script>
+</body>
+</html>

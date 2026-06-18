@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px;
+           background: #f5f5f5; color: #333; }
+    .header { padding: 14px 16px; color: #fff; }
+    .header.entrada { background: #1565c0; }
+    .header.saida   { background: #b71c1c; }
+    .header h2 { font-size: 15px; font-weight: 600; }
+    .header p  { font-size: 11px; opacity: .8; margin-top: 2px; }
+    .form-body { padding: 14px 16px; }
+    .group { margin-bottom: 12px; }
+    label { display: block; font-weight: 600; margin-bottom: 4px;
+            font-size: 12px; color: #555; }
+    input, select, textarea {
+      width: 100%; padding: 7px 9px; border: 1px solid #ccc;
+      border-radius: 5px; font-size: 13px; background: #fff;
+      transition: border .2s;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; }
+    .entrada input:focus, .entrada select:focus { border-color: #1565c0; }
+    .saida   input:focus, .saida   select:focus { border-color: #b71c1c; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-salvar {
+      width: 100%; padding: 10px; color: #fff; border: none;
+      border-radius: 5px; font-size: 14px; font-weight: 600;
+      cursor: pointer; margin-top: 6px;
+    }
+    #btnSalvar.entrada { background: #1565c0; }
+    #btnSalvar.entrada:hover { background: #1976d2; }
+    #btnSalvar.saida   { background: #b71c1c; }
+    #btnSalvar.saida:hover { background: #c62828; }
+    .btn-salvar:disabled { background: #999 !important; cursor: default; }
+    .msg { margin-top: 10px; padding: 9px 12px; border-radius: 5px;
+           font-size: 12px; display: none; }
+    .msg.ok  { background: #e8f5e9; border: 1px solid #4caf50; color: #1b5e20; }
+    .msg.err { background: #ffebee; border: 1px solid #ef9a9a; color: #b71c1c; }
+    .section-title { font-weight: 700; margin: 14px 0 8px;
+                     font-size: 12px; text-transform: uppercase;
+                     border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; }
+    .entrada .section-title { color: #1565c0; border-color: #bbdefb; }
+    .saida   .section-title { color: #b71c1c; border-color: #ffcdd2; }
+    .badge-saldo { display: inline-block; padding: 3px 8px; border-radius: 12px;
+                   font-size: 12px; font-weight: 600; margin-top: 4px; }
+    .badge-ok  { background: #e8f5e9; color: #1b5e20; }
+    .badge-low { background: #fff3e0; color: #e65100; }
+    .badge-min { background: #ffebee; color: #b71c1c; }
+    .divider { border-top: 1px solid #ddd; margin: 14px 0 10px; }
+    .novo-mat-btn {
+      width: 100%; padding: 8px; background: #fff; border: 1px dashed #aaa;
+      border-radius: 5px; cursor: pointer; color: #555; font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .novo-mat-btn:hover { border-color: #666; color: #333; }
+    .novo-mat-form { display: none; background: #fafafa;
+                     border: 1px solid #ddd; border-radius: 6px;
+                     padding: 12px; margin-bottom: 12px; }
+  </style>
+</head>
+<body class="{{TIPO}}">
+<div class="header {{TIPO}}">
+  <h2 id="titulo"></h2>
+  <p id="subtitulo"></p>
+</div>
+<div class="form-body">
+
+  <div class="section-title">Material</div>
+  <div class="group">
+    <label>Selecione o Material *</label>
+    <select id="codigoMaterial" onchange="mostrarSaldo()" required>
+      <option value="">Carregando materiais...</option>
+    </select>
+    <span id="badgeSaldo" class="badge-saldo" style="display:none"></span>
+  </div>
+
+  <button class="novo-mat-btn" onclick="toggleNovoMaterial()">
+    ➕ Cadastrar novo material
+  </button>
+
+  <div class="novo-mat-form" id="novoMatForm">
+    <div class="section-title">Novo Material</div>
+    <div class="group">
+      <label>Descrição *</label>
+      <input type="text" id="novoDesc" placeholder="Ex: MDF Branco 15mm 2750x1830">
+    </div>
+    <div class="row2">
+      <div class="group">
+        <label>Unidade *</label>
+        <input type="text" id="novoUnidade" placeholder="Ex: chapa, m², kg, un">
+      </div>
+      <div class="group">
+        <label>Qtd. Mínima</label>
+        <input type="number" id="novoMinimo" placeholder="0" min="0" step="0.01">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="group">
+        <label>Qtd. Inicial em Estoque</label>
+        <input type="number" id="novoInicial" placeholder="0" min="0" step="0.01">
+      </div>
+      <div class="group">
+        <label>Preço Unit. (R$)</label>
+        <input type="number" id="novoPreco" placeholder="0.00" min="0" step="0.01">
+      </div>
+    </div>
+    <div class="group">
+      <label>Fornecedor</label>
+      <input type="text" id="novoFornecedor" placeholder="Nome do fornecedor">
+    </div>
+    <button class="btn-salvar entrada" style="margin-top:0" onclick="salvarNovoMaterial()">
+      💾 Salvar Material
+    </button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title">Movimentação</div>
+  <div class="row2">
+    <div class="group">
+      <label>Quantidade *</label>
+      <input type="number" id="quantidade" placeholder="0" min="0.01" step="0.01" required>
+    </div>
+    <div class="group">
+      <label>Responsável</label>
+      <input type="text" id="responsavel" placeholder="Quem realizou">
+    </div>
+  </div>
+  <div class="group" id="grupoFornecedor" style="display:none">
+    <label>Fornecedor (Entrada)</label>
+    <input type="text" id="fornecedor" placeholder="Nome do fornecedor">
+  </div>
+  <div class="group" id="grupoPedido" style="display:none">
+    <label>Pedido Vinculado (Saída)</label>
+    <select id="pedidoVinculado">
+      <option value="">Selecione o pedido (opcional)</option>
+    </select>
+  </div>
+  <div class="group">
+    <label>Observações</label>
+    <input type="text" id="observacoes" placeholder="Informações adicionais">
+  </div>
+
+  <button class="btn-salvar" id="btnSalvar" onclick="salvar()"></button>
+  <div class="msg" id="msg"></div>
+</div>
+
+<script>
+  var TIPO = "{{TIPO}}";
+
+  // Inicializa visual conforme tipo
+  document.getElementById('titulo').textContent =
+    TIPO === 'entrada' ? '📦 Entrada de Material' : '📤 Saída de Material';
+  document.getElementById('subtitulo').textContent =
+    TIPO === 'entrada' ? 'Registre a entrada de insumos no estoque'
+                       : 'Registre o consumo de materiais';
+  var btn = document.getElementById('btnSalvar');
+  btn.textContent = TIPO === 'entrada' ? '💾 Registrar Entrada' : '💾 Registrar Saída';
+  btn.className = 'btn-salvar ' + TIPO;
+
+  if (TIPO === 'entrada') document.getElementById('grupoFornecedor').style.display = '';
+  if (TIPO === 'saida')   document.getElementById('grupoPedido').style.display = '';
+
+  var materiais = [];
+
+  // Carrega materiais
+  google.script.run
+    .withSuccessHandler(function(lista) {
+      materiais = lista;
+      var sel = document.getElementById('codigoMaterial');
+      sel.innerHTML = '<option value="">-- Selecione o material --</option>';
+      lista.forEach(function(m) {
+        sel.innerHTML += '<option value="' + m.codigo + '">' +
+          m.codigo + ' – ' + m.descricao +
+          ' (' + m.atual + ' ' + m.unidade + ')</option>';
+      });
+    })
+    .listarMateriais();
+
+  // Carrega pedidos em aberto (para saída)
+  google.script.run
+    .withSuccessHandler(function(pedidos) {
+      var sel = document.getElementById('pedidoVinculado');
+      pedidos.forEach(function(p) {
+        if (p.status !== 'Concluído') {
+          sel.innerHTML += '<option value="' + p.numPedido + '">' +
+            p.numPedido + ' – ' + p.cliente + '</option>';
+        }
+      });
+    })
+    .listarPedidos();
+
+  function mostrarSaldo() {
+    var codigo = document.getElementById('codigoMaterial').value;
+    var badge  = document.getElementById('badgeSaldo');
+    if (!codigo) { badge.style.display = 'none'; return; }
+    var mat = materiais.find(function(m) { return m.codigo === codigo; });
+    if (!mat) return;
+    badge.style.display = 'inline-block';
+    badge.textContent = 'Estoque atual: ' + mat.atual + ' ' + mat.unidade;
+    badge.className = 'badge-saldo ' +
+      (mat.atual <= mat.minimo ? 'badge-min'
+       : mat.atual <= mat.minimo * 1.5 ? 'badge-low' : 'badge-ok');
+  }
+
+  function toggleNovoMaterial() {
+    var f = document.getElementById('novoMatForm');
+    f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function salvarNovoMaterial() {
+    var desc = document.getElementById('novoDesc').value.trim();
+    var uni  = document.getElementById('novoUnidade').value.trim();
+    if (!desc || !uni) {
+      mostrarMsg('⚠️ Preencha Descrição e Unidade do novo material.', 'err');
+      return;
+    }
+    google.script.run
+      .withSuccessHandler(function(res) {
+        mostrarMsg(res, 'ok');
+        document.getElementById('novoMatForm').style.display = 'none';
+        // Recarrega lista de materiais
+        google.script.run
+          .withSuccessHandler(function(lista) {
+            materiais = lista;
+            var sel = document.getElementById('codigoMaterial');
+            sel.innerHTML = '<option value="">-- Selecione o material --</option>';
+            lista.forEach(function(m) {
+              sel.innerHTML += '<option value="' + m.codigo + '">' +
+                m.codigo + ' – ' + m.descricao + ' (' + m.atual + ' ' + m.unidade + ')</option>';
+            });
+          })
+          .listarMateriais();
+      })
+      .withFailureHandler(function(err) { mostrarMsg('❌ ' + err.message, 'err'); })
+      .salvarNovoMaterial({
+        descricao:   desc,
+        unidade:     uni,
+        minimo:      document.getElementById('novoMinimo').value   || 0,
+        inicial:     document.getElementById('novoInicial').value  || 0,
+        preco:       document.getElementById('novoPreco').value     || 0,
+        fornecedor:  document.getElementById('novoFornecedor').value
+      });
+  }
+
+  function salvar() {
+    var codigo   = document.getElementById('codigoMaterial').value;
+    var qtd      = document.getElementById('quantidade').value;
+    if (!codigo || !qtd || parseFloat(qtd) <= 0) {
+      mostrarMsg('⚠️ Selecione o material e informe uma quantidade válida.', 'err');
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = '⏳ Registrando...';
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        mostrarMsg(res, res.startsWith('❌') ? 'err' : 'ok');
+        btn.disabled = false;
+        btn.textContent = TIPO === 'entrada' ? '💾 Registrar Entrada' : '💾 Registrar Saída';
+        if (!res.startsWith('❌')) {
+          document.getElementById('quantidade').value  = '';
+          document.getElementById('observacoes').value = '';
+          mostrarSaldo();
+        }
+      })
+      .withFailureHandler(function(err) {
+        mostrarMsg('❌ Erro: ' + err.message, 'err');
+        btn.disabled = false;
+        btn.textContent = TIPO === 'entrada' ? '💾 Registrar Entrada' : '💾 Registrar Saída';
+      })
+      .registrarMovimento({
+        tipo:           TIPO,
+        codigo:         codigo,
+        quantidade:     qtd,
+        fornecedor:     document.getElementById('fornecedor')       ? document.getElementById('fornecedor').value       : '',
+        pedidoVinculado:document.getElementById('pedidoVinculado')  ? document.getElementById('pedidoVinculado').value  : '',
+        responsavel:    document.getElementById('responsavel').value,
+        observacoes:    document.getElementById('observacoes').value
+      });
+  }
+
+  function mostrarMsg(texto, tipo) {
+    var el = document.getElementById('msg');
+    el.textContent = texto;
+    el.className = 'msg ' + tipo;
+    el.style.display = 'block';
+    if (tipo === 'ok') setTimeout(function(){ el.style.display='none'; }, 5000);
+  }
+</script>
+</body>
+</html>
